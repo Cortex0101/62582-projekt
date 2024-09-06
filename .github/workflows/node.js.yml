@@ -1,0 +1,40 @@
+name: Build, Test and Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # Kør workflowet hver gang der pushes til "main"-branchen
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Tjek repoet ud
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Sæt Node.js op
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: [18.x, 20.x, 22.x]
+
+      # Installer afhængigheder
+      - name: Install dependencies
+        run: npm install
+
+      # Kør tests
+      - name: Run tests
+        run: npm test -- --watchAll=false
+
+      # Byg appen
+      - name: Build project
+        run: npm run build
+
+      # Deploy til GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
